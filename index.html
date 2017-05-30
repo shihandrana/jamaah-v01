@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+  <title>My Project</title>
+  <meta name="description" content="A starting point for using Polymer, Firebase, Geofire, and username/provider logins.">
+
+  <!-- See https://goo.gl/OOhYW5 -->
+  <link rel="manifest" href="/manifest.json">
+
+  <link rel="icon" href="/favicon.ico">
+  <link rel="shortcut icon" sizes="32x32" href="/images/app-icon-transparent-32.png">
+
+  <!-- See https://goo.gl/qRE0vM -->
+  <!-- Chrome for Android theme color -->
+  <meta name="theme-color" content="#00acc1">
+
+  <!-- Add to homescreen for Chrome on Android. Fallback for manifest.json -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="application-name" content="My Project">
+
+  <!-- Add to homescreen for Safari on iOS -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="My Project">
+
+  <!-- Homescreen icons -->
+  <link rel="apple-touch-icon" href="/images/app-icon-48.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/images/app-icon-72.png">
+  <link rel="apple-touch-icon" sizes="96x96" href="/images/app-icon-96.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/images/app-icon-144.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="/images/app-icon-192.png">
+
+  <!-- Tile icon for Windows 8 (144x144 + tile color) -->
+  <meta name="msapplication-TileImage" content="/images/app-icon-144.png">
+  <meta name="msapplication-TileColor" content="#00acc1">
+  <meta name="msapplication-tap-highlight" content="no">
+
+  <!-- Load and register pre-caching Service Worker -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('/service-worker.js');
+      });
+    }
+  </script>
+
+  <script src="/bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+
+  <link rel="import" href="/src/app-shell.html">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Roboto', 'Noto', sans-serif;
+      line-height: 1.5;
+      min-height: 100vh;
+      background-color: #eeeeee;
+    }
+  </style>
+</head>
+
+<body>
+  <noscript>
+    Please enable Javascript for full functionality.
+  </noscript>
+  <app-shell id="app"></app-shell>
+</body>
+
+</html>

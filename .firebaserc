@@ -1,0 +1,8 @@
+{
+  "projects": {
+    "dev": "app-starter-da581",
+    "staging": "app-starter-da581",
+    "production": "app-starter-da581",
+    "default": "app-starter-da581"
+  }
+}

@@ -1,0 +1,395 @@
+<link rel="import" href="../bower_components/polymerfire/firebase-messaging.html">
+<link rel="import" href="../bower_components/app-route/app-location.html">
+<link rel="import" href="../bower_components/app-route/app-route.html">
+<link rel="import" href="../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html">
+<link rel="import" href="../bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
+<link rel="import" href="../bower_components/app-layout/app-drawer/app-drawer.html">
+<link rel="import" href="../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="../bower_components/app-layout/app-header-layout/app-header-layout.html">
+<link rel="import" href="../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../bower_components/neon-animation/neon-animated-pages.html">
+<link rel="import" href="../bower_components/neon-animation/neon-animatable.html">
+<link rel="import" href="../bower_components/neon-animation/neon-animations.html">
+<link rel="import" href="../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../bower_components/value-history/value-history.html">
+<link rel="import" href="../bower_components/app-notifications/app-notifications.html">
+<link rel="import" href="../bower_components/app-toasts/app-toasts.html">
+<link rel="import" href="../bower_components/app-toast/app-toast.html">
+<link rel="import" href="../bower_components/notification-toast/notification-toast.html">
+<link rel="import" href="../bower_components/screen-env/screen-env.html">
+<link rel="import" href="../bower_components/confirm-dialog/confirm-dialog.html">
+<link rel="import" href="header.html">
+<link rel="import" href="app-firebase.html">
+<link rel="import" href="components/auth-loader.html">
+<link rel="import" href="components/app-logo.html">
+<link rel="import" href="components/set-username-dialog.html">
+
+<dom-module id="app-shell">
+  <template>
+    <style include="app-styles">
+       :host {
+        display: block;
+        @apply --font-default;
+        color: var(--primary-text-color);
+        background-color: var(--primary-background-color);
+      }
+
+      app-drawer {
+        --app-drawer-width: 200px;
+      }
+
+      app-toolbar {
+        background-color: var(--primary-color);
+        color: #fff;
+        /*height: inherit;*/
+      }
+
+      .content-wrapper {
+        margin: 0 auto;
+        max-width: 800px;
+        @apply --layout-vertical;
+      }
+
+      #content {
+        @apply --layout-flex;
+      }
+
+      neon-animatable.iron-selected {
+        min-height: calc(100vh - 104px);
+      }
+
+      footer {
+        @apply --font-tiny;
+        color: var(--disabled-text-color);
+        @apply --layout-self-end;
+        margin: 2px;
+      }
+    </style>
+
+    <!-- Project specific settings -->
+    <app-firebase id="firebase" app="{{app}}" firebase-user="{{firebaseUser}}">
+    </app-firebase>
+
+    <!-- Firebase user -> user in database, "auth" -->
+    <auth-loader app="[[app]]" firebase-user="[[firebaseUser]]" username="[[username]]" auth="{{auth}}">
+    </auth-loader>
+
+    <firebase-messaging id="messaging" token="{{messagingToken}}" on-message="_handleCloudMessage">
+    </firebase-messaging>
+
+    <app-notifications id="notifications"></app-notifications>
+
+    <screen-env narrow-width="{{narrowWidth}}" is-touch="{{isTouch}}" ua-is-desktop="{{uaIsDesktop}}" is-mobile="{{isMobile}}">
+    </screen-env>
+
+    <app-location id="appLocation" route="{{route}}">
+    </app-location>
+
+    <app-route route="[[route]]" pattern="/:page" data="{{routeData}}" tail="{{subroute}}">
+    </app-route>
+
+    <value-history value="[[route]]" history="{{history}}" limit="10">
+    </value-history>
+
+
+    <app-drawer-layout fullbleed>
+
+      <!-- Navigation drawer -->
+      <app-drawer id="drawer" opened="{{wideLayout}}">
+        <app-toolbar>
+          <app-logo></app-logo>
+        </app-toolbar>
+        <paper-listbox selected="[[routeData.page]]" attr-for-selected="name" role="navigation">
+          <paper-item name="posts">
+            <a plain class="flex" href="/posts/list">Posts</a>
+          </paper-item>
+          <paper-item name="map">
+            <a plain class="flex" href="/posts/map">Map</a>
+          </paper-item>
+          <paper-item name="new">
+            <a plain class="flex" href="/new">New</a>
+          </paper-item>
+          <div class="divider"></div>
+          <paper-item name="messages">
+            <a plain class="flex" href="/messages">Messages</a>
+          </paper-item>
+
+          <div class="divider"></div>
+          <paper-item name="admin">
+            <a plain class="flex" href="/admin">Admin</a>
+          </paper-item>
+
+          <div class="divider"></div>
+          <paper-item name="test">
+            <a plain class="flex" href="/test">Test page</a>
+          </paper-item>
+
+          <div class="divider"></div>
+          <paper-item name="feedback">
+            <a plain class="flex" href="/feedback">Feedback</a>
+          </paper-item>
+        </paper-listbox>
+      </app-drawer>
+
+      <!-- Main toolbar -->
+      <app-header-layout>
+        <app-header condenses reveals effects="waterfall" class="main-header">
+          <app-toolbar>
+            <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
+            <app-logo hidden$="[[wideLayout]]"></app-logo>
+            <span class="flex"></span>
+            <div class="font-small text-primary">
+              <div hidden$="[[auth]]">
+                <a href="/login">Login</a> | <a href="/register">Register</a>
+              </div>
+              <div hidden$="[[!auth]]">
+                <a href$="/user/[[auth.uid]]">[[auth.profile.name]]</a> | <a href="javascript:" on-tap="logout">logout</a>
+              </div>
+            </div>
+          </app-toolbar>
+        </app-header>
+
+        <!-- Content -->
+        <div class="content-wrapper">
+          <div id="content">
+            <neon-animated-pages role="main" selected="[[routeData.page]]" attr-for-selected="name">
+              <neon-animatable name="posts">
+                <posts-page app="[[app]]" auth="[[auth]]" route="[[subroute]]"></posts-page>
+              </neon-animatable>
+              <neon-animatable name="new">
+                <new-post-page auth="[[auth]]"></new-post-page>
+              </neon-animatable>
+              <neon-animatable name="post">
+                <post-page auth="[[auth]]" route="[[subroute]]"></post-page>
+              </neon-animatable>
+              <neon-animatable name="login">
+                <login-register-page id="loginPage" auth="[[auth]]" on-login-register="loginRegister"></login-register-page>
+              </neon-animatable>
+              <neon-animatable name="register">
+                <login-register-page id="registerPage" auth="[[auth]]" register on-login-register="loginRegister"></login-register-page>
+              </neon-animatable>
+              <neon-animatable name="user">
+                <user-page auth="[[auth]]" route="[[subroute]]"></user-page>
+              </neon-animatable>
+              <neon-animatable name="feedback">
+                <feedback-page auth="[[auth]]"></feedback-page>
+              </neon-animatable>
+              <neon-animatable name="admin">
+                <admin-page auth="[[auth]]"></admin-page>
+              </neon-animatable>
+              <neon-animatable name="test">
+                <test-page auth="[[auth]]"></test-page>
+              </neon-animatable>
+              <neon-animatable name="messages">
+                <messages-page auth="[[auth]]"></messages-page>
+              </neon-animatable>
+              <neon-animatable name="offline">
+                <paper-material>
+                  <div class="font-headline">Offline</div>
+                  <div>We are currently down for maintenance. Please try again later.</div>
+                </paper-material>
+              </neon-animatable>
+            </neon-animated-pages>
+          </div>
+          <footer>Powered by <a plain hover href$="[[_footerLink]]">App<span> </span>Starter</a></footer>
+        </div>
+      </app-header-layout>
+    </app-drawer-layout>
+    <app-toasts id="toasts"></app-toasts>
+    <notification-toast id="notificationToast"></notification-toast>
+    <confirm-dialog id="confirmDialog"></confirm-dialog>
+    <set-username-dialog id="setUsernameDialog"></set-username-dialog>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'app-shell',
+      properties: {
+        app: {
+          type: Object,
+          observer: '_onFirebaseAppChanged'
+        },
+        _footerLink: {
+          type: String,
+          value: 'https://github.com/jifalops/app' + '-starter'
+        }
+      },
+
+      observers: [
+        '_routePageChanged(routeData.page, offline, auth)',
+        '_messagingTokenChanged(auth.uid, auth.user, messagingToken)',
+        '_messagingEnabledChanged(auth.user.messageNotifications)'
+      ],
+
+      _onFirebaseAppChanged: function (app, old) {
+        if (app) {
+          LOG && !old && log.d('Firebase app ready');
+          db.watch('/status/offline', function (offline) {
+            this.offline = offline;
+          }.bind(this));
+        }
+      },
+
+      _authChanged: function (auth) {
+        if (auth) {
+          this._requestMessagingPermission();
+        }
+      },
+
+      _routePageChanged: function (page, offline, auth) {
+        LOG && ROUTE && log.v('page changed:', page);
+
+        if (offline && (page != 'login' &&
+            !(hasChild(auth, 'user', 'role') && isAdmin(auth.user.role)))) {
+          redirect('/offline');
+          return;
+        }
+
+        var file = this._fileForPage(page);
+        if (!page || !file) {
+          redirect('/posts/list');
+          return;
+        }
+
+        // load page import on demand.
+        var url = this.resolveUrl(file);
+        this.importHref(url, function () {
+          LOG && ROUTE && log.v('imported', url);
+        }.bind(this), function () {
+          LOG && log.e('failed to import', url);
+        }, true);
+      },
+
+      _fileForPage: function (page) {
+        switch (page) {
+          case 'posts':
+            return '/src/pages/posts/posts-page.html';
+          case 'post':
+            return '/src/pages/post/post-page.html';
+          case 'new':
+            return '/src/pages/new-post/new-post-page.html';
+          case 'user':
+            return '/src/pages/user/user-page.html';
+          case 'login':
+            return '/src/pages/login-register/login-register-page.html';
+          case 'register':
+            return '/src/pages/login-register/login-register-page.html';
+          case 'feedback':
+            return '/src/pages/feedback/feedback-page.html';
+          case 'admin':
+            return '/src/pages/admin/admin-page.html';
+          case 'test':
+            return '/src/pages/test/test-page.html';
+          case 'messages':
+            return '/src/pages/messages/messages-page.html';
+        }
+      },
+
+      loginRegister: function (e, data) {
+        if (data.provider == 'username') {
+          if (data.isRegistering) {
+            this.username = data.username;
+            this.$.firebase.$.auth.registerUser(data.username, data.password, function () {
+              this.$.registerPage.$.username.value = '';
+              this.$.registerPage.$.password.value = '';
+              this.$.registerPage.$.passwordRepeat.value = '';
+              goBack();
+            }.bind(this), this._handleLoginRegisterError.bind(this));
+          } else {
+            this.$.firebase.$.auth.usernameLogin(data.username, data.password, function () {
+              this.$.loginPage.$.username.value = '';
+              this.$.loginPage.$.password.value = '';
+              goBack();
+            }.bind(this), this._handleLoginRegisterError.bind(this));
+          }
+        } else {
+          this.$.firebase.$.auth.providerLogin(data.provider, function () {
+            goBack();
+          }.bind(this), this._handleLoginRegisterError.bind(this));
+        }
+      },
+
+      logout: function () {
+        this.$.firebase.$.auth.logout(function () {
+          // goBack();
+        }, showServerErrorToast, showServerErrorToast);
+      },
+
+      _messagingEnabledChanged: function (enabled) {
+        // LOG && log.v('messaging enabled', enabled);
+        if (enabled) this.$.messaging.requestPermission();
+      },
+
+      _messagingTokenChanged: function (uid, user, token) {
+        // LOG && log.v('token changed', token);
+        if (uid && token && !hasChild(user, 'messagingTokens', token)) {
+          db.users.addMessagingToken(uid, token);
+        }
+      },
+
+      _handleCloudMessage: function (e, data) {
+        // LOG && log.v('Message received', arguments);
+
+        // If a system notification was shown, the data part will be passed here.
+        // We will ignore those messages and handle notifications when the app is currently open.
+        if (hasChild(data, 'message', 'notification')) {
+          var n = data.message.notification;
+          var d = data.message.data;
+          // Only show if the currently auth'd user is the recipient.
+          if (this.routeData.page != 'messages' && this.auth && this.auth.uid == d.to) {
+            this.$.notificationToast.show({
+              notificationTitle: n.title,
+              body: n.body,
+              icon: n.icon,
+              onTapped: function (e) {
+                redirect('/messages/');
+                this.$.notificationToast.close();
+              }.bind(this)
+            });
+          }
+        }
+      },
+
+      _handleLoginRegisterError: function (error) {
+        switch (error.code) {
+          case 'auth/invalid-email':
+            var input = this.$.registerPage.$.username;
+            input.focus();
+            input.$.input.select();
+            input.errorMessage = 'Only letters, numbers, - and _';
+            input.invalid = true;
+            showErrorToast('Invalid username');
+            break;
+          case 'auth/user-not-found':
+            var input = this.$.loginPage.$.username;
+            input.focus();
+            input.$.input.select();
+            input.errorMessage = 'That user does not exist.';
+            input.invalid = true;
+            showErrorToast('That user does not exist.');
+            break;
+          case 'auth/wrong-password':
+            var input = this.$.loginPage.$.password;
+            input.focus();
+            input.$.input.select();
+            input.errorMessage = 'Incorrect password.';
+            input.invalid = true;
+            showErrorToast('Incorrect password.');
+            break;
+          case 'auth/email-already-in-use':
+            var input = this.$.registerPage.$.username;
+            input.focus();
+            input.$.input.select();
+            input.errorMessage = 'That user already exists.';
+            input.invalid = true;
+            showErrorToast('That user already exists.');
+            break;
+        }
+      }
+    });
+  </script>
+</dom-module>
