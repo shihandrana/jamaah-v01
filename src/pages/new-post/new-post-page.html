@@ -116,13 +116,10 @@
         // lat = perturbCoordinate(lat);
         // lng = perturbCoordinate(lng);
         var dist = GeoFire.distance(coords, [lat, lng]);
-        var unit = this.auth.user.useMetric ? 'km' : 'mi';
-        if (unit == 'mi') dist = kmToMiles(dist);
-        showInfoToast('Anonymizing to ' + round(dist, 1) + ' ' + unit + ' away.');
+        showInfoToast('Anonymizing to ' + round(dist, 1) + ' km away.');
         db.users.updateLocation(this.auth.uid, lat, lng, null, showServerErrorToast);
       },
       _addPost: function (lat, lng) {
-        console.log(lat, " <> ", lng);
         if (this.$.title.validate() && this.$.location.validate()
           && this.$.body.validate()) {
           var coords = [lat, lng];
@@ -130,9 +127,7 @@
           lng = perturbCoordinate(lng);
 
           var dist = GeoFire.distance(coords, [lat, lng]);
-          var unit = this.auth.user.useMetric ? 'km' : 'mi';
-          if (unit == 'mi') dist = kmToMiles(dist);
-          showInfoToast('Anonymizing to ' + round(dist, 1) + ' ' + unit + ' away.');
+          showInfoToast('Anonymizing to ' + round(dist, 1) + ' km away.');
 
           var post = {
             title: this.$.title.value,

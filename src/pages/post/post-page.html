@@ -8,9 +8,10 @@
 <dom-module id="post-page">
   <template>
     <style include="app-styles">
-      :host {
+       :host {
         display: block;
       }
+
       .font-subhead {
         margin-top: 12px;
       }
@@ -19,10 +20,7 @@
     <!--TODO may prompt on page load-->
     <geo-location latitude="{{userLat}}" longitude="{{userLng}}"></geo-location>
 
-    <app-route
-      route="[[route]]"
-      pattern="/:pid"
-      data="{{routeData}}">
+    <app-route route="[[route]]" pattern="/:pid" data="{{routeData}}">
     </app-route>
 
     <paper-material class="layout vertical">
@@ -30,7 +28,7 @@
       <div class="text-secondary layout horizontal center justified">
         <from-now time="[[post.created]]"></from-now>
         <div>[[post.location]]
-          <span hidden$="[[!distance]]">([[distance]] [[unit]])</span>
+          <span hidden$="[[!distance]]">([[distance]] km)</span>
         </div>
       </div>
       <div class="font-subhead">Tags</div>
@@ -59,13 +57,13 @@
         '_calcDistance(_lat, _lng, userLat, userLng, auth)'
       ],
 
-      _pidChanged: function(pid) {
+      _pidChanged: function (pid) {
         if (pid) {
-          db.read('/posts/' + pid, function(post) {
+          db.read('/posts/' + pid, function (post) {
             // LOG && log.v('loaded post', post);
             this.post = post;
           }.bind(this));
-          db.read('/geoPosts/' + pid + '/l', function(coords) {
+          db.read('/geoPosts/' + pid + '/l', function (coords) {
             // LOG && log.v('loaded coords', coords);
             if (isArray(coords) && coords.length == 2) {
               this._lat = coords[0];
@@ -74,20 +72,13 @@
           }.bind(this));
         }
       },
-      _calcDistance: function(lat, lng, userLat, userLng, auth) {
+      _calcDistance: function (lat, lng, userLat, userLng, auth) {
         // LOG && log.v('_calcDistance', arguments);
         if (lat && lng && userLat && userLng) {
-          var dist = GeoFire.distance([lat, lng], [userLat, userLng]);
-          if (!auth || !auth.user.useMetric) {
-            this.distance = round(kmToMiles(dist), 1);
-            this.unit = 'mi';
-          } else {
-            this.distance = round(dist, 1);
-            this.unit = 'km';
-          }
+          this.distance = GeoFire.distance([lat, lng], [userLat, userLng]);
         }
       },
-      _getTags: function(tags) {
+      _getTags: function (tags) {
         if (tags) return Object.keys(tags).join(', ');
       }
     });

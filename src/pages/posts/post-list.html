@@ -7,17 +7,20 @@
   <template>
 
     <style include="app-styles">
-      :host {
+       :host {
         display: block;
       }
+
       iron-list {
         min-height: 200px;
       }
+
       paper-material {
         padding: 16px 16px 8px 16px;
         margin: 6px 12px;
         border-radius: 6px;
       }
+
       .heading {
         padding: 0 16px;
         margin: 12px 12px 0;
@@ -25,12 +28,7 @@
       }
     </style>
 
-    <iron-list
-      id="list"
-      selection-enabled
-      scroll-target="document"
-      items="[[posts]]"
-      as="post">
+    <iron-list id="list" selection-enabled scroll-target="document" items="[[posts]]" as="post">
       <template>
         <div>
           <a plain href$="[[_getUrl(post)]]">
@@ -43,7 +41,7 @@
                 <span class="font-subhead">[[post.title]]</span>
                 <span>[[post.author]]</span>
               </template>
-              <div class="font-small">[[_round(post.distance)]] [[post.distanceUnit]]</div>
+              <div class="font-small">[[_round(post.distance)]] km</div>
             </paper-material>
           </a>
         </div>
@@ -52,28 +50,28 @@
   </template>
 
   <script>
-  Polymer({
-    is: 'post-list',
-    properties: {
-      auth: Object,
-      posts: {
-        type: Array,
-        observer: 'notifyResize'
+    Polymer({
+      is: 'post-list',
+      properties: {
+        auth: Object,
+        posts: {
+          type: Array,
+          observer: 'notifyResize'
+        }
+      },
+      notifyResize: function () {
+        this.$.list.notifyResize();
+      },
+      _round: function (dist) {
+        return round(dist, 1)
+      },
+      _getUrl: function (post) {
+        return (post.type == 'post' ? '/post/' : '/user/') + post.$key;
+      },
+      _isUser: function (post) {
+        return post.type == 'user';
       }
-    },
-    notifyResize: function() {
-      this.$.list.notifyResize();
-    },
-    _round: function(dist) {
-      return round(dist, 1)
-    },
-    _getUrl: function(post) {
-      return (post.type == 'post' ? '/post/' : '/user/') + post.$key;
-    },
-    _isUser: function(post) {
-      return post.type == 'user';
-    }
-  });
+    });
   </script>
 
 </dom-module>

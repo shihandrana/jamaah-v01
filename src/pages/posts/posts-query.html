@@ -44,7 +44,7 @@
     </geo-query>
 
     <div class="layout vertical center hidden">
-      <geo-query-input search="[[searchBase]]" radius="100" unit="{{unit}}" radius-options="[[radiusOptions]]" on-query-changed="_queryChanged">
+      <geo-query-input search="[[searchBase]]" radius="100" unit="km" radius-options="[[radiusOptions]]" on-query-changed="_queryChanged">
       </geo-query-input>
       <p>[[auth.user.searchBase]]</p>
       <div class="layout horizontal">
@@ -154,8 +154,7 @@
           post.$key = geoPost.key;
           post.lat = geoPost.lat;
           post.lng = geoPost.lng;
-          post.distanceUnit = this.unit;
-          post.distance = this.unit == 'km' ? geoPost.distance : kmToMiles(geoPost.distance);
+          post.distance = geoPost.distance;
           this.push('_loadedPosts', post);
         }.bind(this));
       },
@@ -165,8 +164,7 @@
           user.$key = geoUser.key;
           user.lat = geoUser.lat;
           user.lng = geoUser.lng;
-          user.distanceUnit = this.unit;
-          user.distance = this.unit == 'km' ? geoUser.distance : kmToMiles(geoUser.distance);
+          user.distance = geoUser.distance;
           this.push('_loadedUsers', user);
         }.bind(this));
       },
@@ -231,10 +229,7 @@
       },
 
       _authChanged: function (auth) {
-        if (auth) {
-          this.unit = auth.user.useMetric ? 'km' : 'mi';
-          this.searchBase = auth.user.searchBase;
-        }
+        if (auth) this.searchBase = auth.user.searchBase;
       }
     });
   </script>
