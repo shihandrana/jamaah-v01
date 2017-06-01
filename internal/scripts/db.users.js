@@ -1,7 +1,7 @@
 var db = db || {};
 
 db.users = {
-  createUser: function(uid, username, user, profile, onSuccess, onFailure) {
+  createUser: function (uid, username, user, profile, onSuccess, onFailure) {
     LOG && DB && console.log('Creating user ' + username);
     var updates = {};
     updates['/uids/' + uid] = username;
@@ -18,7 +18,7 @@ db.users = {
     db.update(updates, onSuccess, onFailure);
   },
 
-  updateLocation: function(user, lat, lng, onSuccess, onFailure) {
+  updateLocation: function (user, lat, lng, onSuccess, onFailure) {
     LOG && DB && console.log('Updating location to', lat, lng);
     var geofire = new GeoFire(db.ref('/geoUsers'));
     geofire.set(user, [lat, lng]).then(function () {
@@ -35,14 +35,14 @@ db.users = {
     db.update(updates, onSuccess, onFailure);
   },
 
-  setElevated: function(user, elevated, onSuccess, onFailure) {
+  setElevated: function (user, elevated, onSuccess, onFailure) {
     LOG && DB && console.log('Setting elevated to ' + elevated);
     var updates = db.userActionUpdate(user);
     updates['/users/' + user + '/isElevated'] = elevated;
     db.update(updates, onSuccess, onFailure);
   },
 
-  sendFeedback: function(user, feedback, onSuccess, onFailure) {
+  sendFeedback: function (user, feedback, onSuccess, onFailure) {
     var key = db.newKey('/feedback/');
     LOG && DB && console.log('Sending feedback', key);
     var updates = db.userActionUpdate(user);
@@ -54,7 +54,7 @@ db.users = {
     db.update(updates, onSuccess, onFailure);
   },
 
-  sendMessage: function(user, otherUsers, chat, msg, onSuccess, onFailure) {
+  sendMessage: function (user, otherUsers, chat, msg, onSuccess, onFailure) {
     LOG && DB && console.log('Sending message to', otherUsers);
     var updates = db.userActionUpdate(user);
     var i;
@@ -88,23 +88,29 @@ db.users = {
     db.update(updates, onSuccess, onFailure);
   },
 
-  addProvider: function(user, provider, onSuccess, onFailure) {
+  addProvider: function (user, provider, onSuccess, onFailure) {
     var updates = db.userActionUpdate(user);
     updates['/users/' + user + '/providers/' + provider] = true;
     db.update(updates, onSuccess, onFailure);
   },
 
-  addMessagingToken: function(user, token, onSuccess, onFailure) {
+  addMessagingToken: function (user, token, onSuccess, onFailure) {
     db.set('/users/' + user + '/messagingTokens/' + token, true, onSuccess, onFailure);
   },
-  setMessageNotifications: function(user, enabled, onSuccess, onFailure) {
+  setMessageNotifications: function (user, enabled, onSuccess, onFailure) {
     var updates = db.userActionUpdate(user);
     updates['/users/' + user + '/messageNotifications'] = enabled;
     db.update(updates, onSuccess, onFailure);
   },
-  setUseMetric: function(user, enabled, onSuccess, onFailure) {
+  setUseMetric: function (user, enabled, onSuccess, onFailure) {
     var updates = db.userActionUpdate(user);
     updates['/users/' + user + '/useMetric'] = enabled;
     db.update(updates, onSuccess, onFailure);
-  }
+  },
+  setSearchBase: function (user, searchBase, onSuccess, onFailure) {
+    LOG && DB && console.log('Setting search base to', searchBase);
+    var updates = db.userActionUpdate(user);
+    updates['/users/' + user + '/searchBase'] = searchBase;
+    db.update(updates, onSuccess, onFailure);
+  },
 };
