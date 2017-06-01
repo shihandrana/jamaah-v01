@@ -104,14 +104,10 @@
             <iron-image alt="facebook" src="/images/facebook-icon.svg" preload></iron-image>
             Facebook
           </div>
-          <div class="layout vertical center" hidden$="[[_includes(_providers, 'Twitter')]]" on-tap="_linkTwitter">
+          <!--<div class="layout vertical center" hidden$="[[_includes(_providers, 'Twitter')]]" on-tap="_linkTwitter">
             <iron-image alt="twitter" src="/images/twitter-icon.svg" preload></iron-image>
             Twitter
-          </div>
-          <div class="layout vertical center" hidden$="[[_includes(_providers, 'Github')]]" on-tap="_linkGithub">
-            <iron-image alt="github" src="/images/github-icon.svg" preload></iron-image>
-            Github
-          </div>
+          </div>-->
         </div>
       </div>
 
@@ -129,10 +125,6 @@
       <div class="layout horizontal center justified">
         <div>Message notifications</div>
         <paper-toggle-button checked="[[auth.user.messageNotifications]]" on-change="_messageNotificationsChanged"></paper-toggle-button>
-      </div>
-      <div class="layout horizontal center justified">
-        <div>Use metric</div>
-        <paper-toggle-button checked="[[auth.user.useMetric]]" on-change="_useMetricChanged"></paper-toggle-button>
       </div>
       <div class="layout horizontal center justified">
         <paper-dropdown-menu label="Search base">
@@ -315,9 +307,6 @@
       _linkTwitter: function () {
         this._linkProvider('twitter')
       },
-      _linkGithub: function () {
-        this._linkProvider('github')
-      },
       _linkProvider: function (name) {
         document.getElementById('app').$['firebase'].$['auth'].linkProvider(name, function () {
           db.users.addProvider(this.auth.uid, ucFirst(name), function () {
@@ -359,13 +348,6 @@
         var enabled = e.target.checked;
         if (this.auth && this.auth.user.messageNotifications != enabled) {
           db.users.setMessageNotifications(this.auth.uid, enabled);
-        }
-      },
-      _useMetricChanged: function (e) {
-        // LOG && log.v('_messageNotificationsChanged', arguments);
-        var enabled = e.target.checked;
-        if (this.auth && this.auth.user.useMetric != enabled) {
-          db.users.setUseMetric(this.auth.uid, enabled);
         }
       }
     });

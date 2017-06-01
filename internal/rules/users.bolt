@@ -30,7 +30,7 @@ type User {
 }
 
 type Provider extends String {
-  validate() { this.test(/^(Username|Google|Facebook|Twitter|Github)$/) }
+  validate() { this.test(/^(Username|Google|Facebook|Twitter)$/) }
 }
 
 type UserRole extends String {
