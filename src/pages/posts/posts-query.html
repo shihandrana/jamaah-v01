@@ -44,8 +44,9 @@
     </geo-query>
 
     <div class="layout vertical center hidden">
-      <geo-query-input search="manchester" radius="100" unit="{{unit}}" radius-options="[[radiusOptions]]" on-query-changed="_queryChanged">
+      <geo-query-input search="[[searchBase]]" radius="100" unit="{{unit}}" radius-options="[[radiusOptions]]" on-query-changed="_queryChanged">
       </geo-query-input>
+      <p>[[auth.user.searchBase]]</p>
       <div class="layout horizontal">
         <paper-checkbox noink checked="{{includePosts}}">Posts</paper-checkbox>
         <paper-checkbox noink checked="{{includeUsers}}">Users</paper-checkbox>
@@ -107,6 +108,9 @@
         results: {
           type: Array,
           notify: true
+        },
+        searchBase: {
+          type: String
         },
         useCurrentLocation: {
           type: Boolean,
@@ -227,7 +231,10 @@
       },
 
       _authChanged: function (auth) {
-        if (auth) this.unit = auth.user.useMetric ? 'km' : 'mi';
+        if (auth) {
+          this.unit = auth.user.useMetric ? 'km' : 'mi';
+          this.searchBase = auth.user.searchBase;
+        }
       }
     });
   </script>
